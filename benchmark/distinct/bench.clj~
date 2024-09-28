@@ -1,0 +1,46 @@
+(ns distinct.bench
+  (:require [distinct.core :as d]
+            [criterium.core :as c]))
+
+(def distincts [[d/distinct-raw-transient "distinct-raw-transient"]
+                [d/distinct-transient "distinct-transient"]
+                [d/distinct-contain "distinct-contain"]
+                [d/distinct-nolazy "distinct-nolazy"]])
+
+(defn format-time [estimate]
+  (let [mean (first estimate)
+        [factor unit] (c/scale-time mean)]
+    (c/format-value mean factor unit)))
+
+(defn pcnt [r1 r2]
+  (->> (first (:mean r2))
+       (* 100)
+       (- 100)
+       int))
+
+(defmacro race [results-base body]
+ `(let [results# (c/quick-benchmark ~body {})
+        percent# (pcnt ~results-base results#)]
+    (println ~(pr-str body) "\t"
+             (format-time (:mean ~results-base)) "=>" (format-time (:mean results#))
+             (str "(" (- percent#) "%)"))))
+
+
+(defn run [& args]
+  (println "Got args: " args)
+  (doseq [size [10 100 1000 10000]
+          :let [coll (vec (repeatedly size #(rand-int 1000)))]]
+    (let [resultsb (c/quick-benchmark (doall (distinct coll)) {})]
+      (println size "elements")
+      (race resultsb (doall (d/distinct-raw-transient coll)))
+      (race resultsb (into [] (d/distinct-raw-transient coll)))
+      (println)
+      (race resultsb (doall (d/distinct-transient coll)))
+      (race resultsb (into [] (d/distinct-transient coll)))
+      (println)
+      (race resultsb (doall (d/distinct-contain coll)))
+      (race resultsb (into [] (d/distinct-contain coll)))
+      (println)
+      (race resultsb (doall (d/distinct-nolazy coll)))
+      (race resultsb (into [] (d/distinct-nolazy coll))))))
+
