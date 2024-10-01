@@ -2,10 +2,11 @@
   (:require [clojure.test :refer [deftest is testing]]
             [distinct.core :as d]))
 
-(def distincts [#?(:clj [d/distinct-raw-transient "distinct-raw-transient"])
+(def distincts [[d/distinct-nolazy "distinct-nolazy"]
+                [d/distinct-nocontains "distinct-nocontains"]
                 [d/distinct-transient "distinct-transient"]
-                [d/distinct-contain "distinct-contain"]
-                [d/distinct-nolazy "distinct-nolazy"]])
+                [d/distinct-transient-nocontains "distinct-transient-nocontains"]
+                #?(:clj [d/distinct-raw-transient "distinct-raw-transient"])])
 
 (defn compare-distinct [coll dd ddname]
   (is (= (distinct coll) (dd coll)) (str ddname " failed")))
