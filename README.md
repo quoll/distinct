@@ -21,7 +21,7 @@ Unfortunately, this relies on behavior of `conj` for sets that is not documented
 The third approach is to use a transient set. This should be faster than a non-transient version since transient sets often do not need to allocate new memory and perform copies. This was the original approach taken by @tonsky way back in 2016. However, at the time transient sets did not respond to the `contains?` function, and the proposed change was pushed back until this had been addressed.
 
 ### `distinct-transient-nocontains`
-The fourth approach tries to use a transient set similarly to `distinct-nocontains`. However, since transients often mutate in place, `count` has to be used for the comparison.
+The fourth approach tries to use a transient set similarly to `distinct-nocontains`. However, since transients often mutated in place, `count` has to be used for the comparison.
 
 ### `distinct-raw-transient`
 The fifth approach uses a transient set the same as `distinct-transient`, but rather than using the newly supported `contains?` method, it calls the native `.contains` method on the `ITransientSet` interface. This skips a couple of internal checks on the datatype that occur in `clojure.lang.RT/contains(Object,Object)`. This would not typically be recommended, but if it were hidden in the core libraries then perhaps it might be acceptable.
