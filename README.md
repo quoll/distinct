@@ -35,6 +35,7 @@ clj -T:bench
 ```
 
 ### Results
+Negative numbers indicate an improvement from the baseline, with larger magnitudes being a larger improvement. Positive numbers indicate slower code.
 ```
 Running benchmark for size 10...
 Baseline for (doall (distinct coll))		 1.275606 µs
